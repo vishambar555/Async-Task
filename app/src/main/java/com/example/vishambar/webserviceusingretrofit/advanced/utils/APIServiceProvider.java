@@ -1,17 +1,17 @@
 package com.example.vishambar.webserviceusingretrofit.advanced.utils;
 
 import com.example.vishambar.webserviceusingretrofit.advanced.MyApplication;
-import com.example.vishambar.webserviceusingretrofit.advanced.models.ItemsModel;
-import com.example.vishambar.webserviceusingretrofit.advanced.models.ToDoItem;
+import com.example.vishambar.webserviceusingretrofit.advanced.models.ItemModel;
+import com.example.vishambar.webserviceusingretrofit.advanced.models.ModifyItemInputModel;
 import com.example.vishambar.webserviceusingretrofit.advanced.models.TokenModel;
 import com.example.vishambar.webserviceusingretrofit.advanced.models.RegisterModel;
 import com.example.vishambar.webserviceusingretrofit.advanced.models.UserModel;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
+import okhttp3.ResponseBody;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
 import retrofit2.Retrofit;
@@ -58,14 +58,24 @@ public class APIServiceProvider {
         return apiInterface.login(userModel);
     }
 
-    public Call<List<ItemsModel>> getItemsApi() {
+    public Call<List<ItemModel>> getItemsApi() {
         String emailId = MyApplication.getUser().getAuthorEmailId();
         String token = MyApplication.getToken();
         return apiInterface.getItems(MyApplication.getUser().getAuthorEmailId(), MyApplication.getToken());
     }
 
 
-    public Call<ItemsModel> addItem(ItemsModel itemsModel) {
-        return apiInterface.addToDoItem(MyApplication.getToken(),itemsModel);
+    public Call<ItemModel> addItem(ItemModel itemModel) {
+        return apiInterface.addToDoItem(MyApplication.getToken(), itemModel);
+    }
+
+    public Call<ItemModel> modifyItem(ModifyItemInputModel modifyItemInputModel) {
+        String token=MyApplication.getToken();
+        return apiInterface.modifyToDoItem(MyApplication.getToken(),modifyItemInputModel);
+    }
+
+    public Call<ResponseBody> deleteItem(ItemModel itemModel) {
+        String token=MyApplication.getToken();
+        return  apiInterface.deleteItem(MyApplication.getToken(),itemModel);
     }
 }

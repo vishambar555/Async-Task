@@ -1,8 +1,11 @@
 package com.example.vishambar.webserviceusingretrofit.advanced.models;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.util.Date;
 
-public class ItemsModel {
+public class ItemModel implements Parcelable{
     private long id;
     private String todoString;
     private long date;
@@ -11,14 +14,35 @@ public class ItemsModel {
     private String authorEmailId;
 
 
-    public ItemsModel(long id, String todoString, String authorEmailId,String place) {
+    public ItemModel(long id, String todoString, String authorEmailId, String place,long date) {
         super();
         this.id = id;
         this.todoString = todoString;
         this.date = new Date().getTime();
         this.authorEmailId = authorEmailId;
         this.place = place;
+        this.date=date;
     }
+
+    protected ItemModel(Parcel in) {
+        id = in.readLong();
+        todoString = in.readString();
+        date = in.readLong();
+        place = in.readString();
+        authorEmailId = in.readString();
+    }
+
+    public static final Creator<ItemModel> CREATOR = new Creator<ItemModel>() {
+        @Override
+        public ItemModel createFromParcel(Parcel in) {
+            return new ItemModel(in);
+        }
+
+        @Override
+        public ItemModel[] newArray(int size) {
+            return new ItemModel[size];
+        }
+    };
 
     public long getId() {
         return id;
@@ -62,4 +86,17 @@ public class ItemsModel {
         return "("+this.id+", "+this.todoString+", "+this.place+")";
     }
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeLong(id);
+        parcel.writeString(todoString);
+        parcel.writeLong(date);
+        parcel.writeString(place);
+        parcel.writeString(authorEmailId);
+    }
 }

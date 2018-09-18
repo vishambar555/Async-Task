@@ -1,8 +1,8 @@
 package com.example.vishambar.webserviceusingretrofit.advanced.activity;
 
-import android.nfc.Tag;
-import android.support.v7.app.AppCompatActivity;
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -15,22 +15,25 @@ import com.example.vishambar.webserviceusingretrofit.BaseActivity;
 import com.example.vishambar.webserviceusingretrofit.R;
 import com.example.vishambar.webserviceusingretrofit.advanced.MyApplication;
 import com.example.vishambar.webserviceusingretrofit.advanced.adapters.ItemsAdapter;
-import com.example.vishambar.webserviceusingretrofit.advanced.models.ItemsModel;
+import com.example.vishambar.webserviceusingretrofit.advanced.models.ItemModel;
+import com.example.vishambar.webserviceusingretrofit.advanced.utils.ItemClickInterface;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class ItemsActivity extends BaseActivity implements View.OnClickListener {
+public class ItemsActivity extends BaseActivity implements View.OnClickListener, ItemClickInterface {
     private static final String TAG = ItemsActivity.class.getClass().getSimpleName();
     private RecyclerView recyclerView;
-    private Button addItemBtn,getItemsBtn;
+    private Button addItemBtn, getItemsBtn;
     private EditText itemNameEt, placeEt;
     private ItemsAdapter itemsAdapter;
-    private List<ItemsModel> mItemsList;
+    private List<ItemModel> mItemsList;
+    private int clickedItemPosition=-1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,13 +46,13 @@ public class ItemsActivity extends BaseActivity implements View.OnClickListener 
         itemNameEt = findViewById(R.id.et_item_name);
         placeEt = findViewById(R.id.et_place);
         addItemBtn = findViewById(R.id.btn_add_items);
-        getItemsBtn=findViewById(R.id.btn_get_items);
+        getItemsBtn = findViewById(R.id.btn_get_items);
         recyclerView = findViewById(R.id.recycler_view);
     }
 
     @Override
     public void setData() {
-            getItems();
+        getItems();
     }
 
     private boolean validate() {
@@ -65,9 +68,9 @@ public class ItemsActivity extends BaseActivity implements View.OnClickListener 
     }
 
     private void getItems() {
-        MyApplication.apiServiceProvider.getItemsApi().enqueue(new Callback<List<ItemsModel>>() {
+        MyApplication.apiServiceProvider.getItemsApi().enqueue(new Callback<List<ItemModel>>() {
             @Override
-            public void onResponse(Call<List<ItemsModel>> call, Response<List<ItemsModel>> response) {
+            public void onResponse(Call<List<ItemModel>> call, Response<List<ItemModel>> response) {
                 mItemsList = response.body();
                 if (mItemsList != null && !mItemsList.isEmpty()) {
                     Log.d(TAG, mItemsList.toString());
@@ -77,14 +80,14 @@ public class ItemsActivity extends BaseActivity implements View.OnClickListener 
             }
 
             @Override
-            public void onFailure(Call<List<ItemsModel>> call, Throwable t) {
+            public void onFailure(Call<List<ItemModel>> call, Throwable t) {
                 Log.d(TAG, "failed fetching items in" + ItemsActivity.class.getClass().getSimpleName());
             }
         });
     }
 
     private void setAdapter() {
-        itemsAdapter = new ItemsAdapter(this, mItemsList);
+        itemsAdapter = new ItemsAdapter(this, this, mItemsList);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(itemsAdapter);
     }
@@ -93,6 +96,7 @@ public class ItemsActivity extends BaseActivity implements View.OnClickListener 
     public void setListeners() {
         addItemBtn.setOnClickListener(this);
         getItemsBtn.setOnClickListener(this);
+
     }
 
     @Override
@@ -107,15 +111,18 @@ public class ItemsActivity extends BaseActivity implements View.OnClickListener 
             case R.id.btn_get_items:
                 getItems();
                 break;
+
+
         }
     }
 
+
     private void addItem() {
-        final ItemsModel itemsModel = new ItemsModel(MyApplication.getUser().getAuthorId(), itemNameEt.getText().toString(), MyApplication.getUser().getAuthorEmailId(), placeEt.getText().toString());
-        MyApplication.apiServiceProvider.addItem(itemsModel).enqueue(new Callback<ItemsModel>() {
+        final ItemModel itemModel = new ItemModel(MyApplication.getUser().getAuthorId(), itemNameEt.getText().toString(), MyApplication.getUser().getAuthorEmailId(), placeEt.getText().toString(), new Date().getTime());
+        MyApplication.apiServiceProvider.addItem(itemModel).enqueue(new Callback<ItemModel>() {
             @Override
-            public void onResponse(Call<ItemsModel> call, Response<ItemsModel> response) {
-                ItemsModel item = response.body();
+            public void onResponse(Call<ItemModel> call, Response<ItemModel> response) {
+                ItemModel item = response.body();
                 if (mItemsList == null || mItemsList.isEmpty()) {
                     mItemsList = new ArrayList<>();
                     mItemsList.add(item);
@@ -127,9 +134,40 @@ public class ItemsActivity extends BaseActivity implements View.OnClickListener 
             }
 
             @Override
-            public void onFailure(Call<ItemsModel> call, Throwable t) {
+            public void onFailure(Call<ItemModel> call, Throwable t) {
 
             }
         });
     }
+
+    @Override
+    public void handleClick(int position) {
+        clickedItemPosition=position;
+        Intent intent = new Intent(this, ItemDetailsActivty.class);
+        Bundle bundle = new Bundle();
+
+        bundle.putParcelable("ParcelableObject", mItemsList.get(position));
+        intent.putExtras(bundle);
+        startActivityForResult(intent, 25);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+
+        if(data!=null && clickedItemPosition!=-1){
+            Bundle bundle = data.getExtras();
+            if (bundle!=null){
+                ItemModel itemModel = bundle.getParcelable("new_item");
+                mItemsList.set(clickedItemPosition, itemModel);
+            }else{
+                mItemsList.remove(clickedItemPosition);
+            }
+
+            itemsAdapter.notifyDataSetChanged();
+        }
+
+    }
+
 }

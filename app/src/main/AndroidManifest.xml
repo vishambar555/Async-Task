@@ -21,6 +21,7 @@
         </activity>
         <activity android:name=".advanced.activity.LoginActivity" />
         <activity android:name=".advanced.activity.ItemsActivity" />
+        <activity android:name=".advanced.activity.ItemDetailsActivty"/>
         <activity android:name=".advanced.activity.RegistrationActivity"></activity>
     </application>
 

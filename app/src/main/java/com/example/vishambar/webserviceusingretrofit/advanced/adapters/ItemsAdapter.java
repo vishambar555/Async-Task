@@ -9,18 +9,21 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.vishambar.webserviceusingretrofit.R;
-import com.example.vishambar.webserviceusingretrofit.advanced.models.ItemsModel;
+import com.example.vishambar.webserviceusingretrofit.advanced.models.ItemModel;
+import com.example.vishambar.webserviceusingretrofit.advanced.utils.ItemClickInterface;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class ItemsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private LayoutInflater layoutInflater;
-    private ArrayList<ItemsModel> itemsArrayList;
+    private ArrayList<ItemModel> itemsArrayList;
+    private ItemClickInterface itemClickInterface;
 
-    public ItemsAdapter(Context context, List<ItemsModel> itemslList) {
+    public ItemsAdapter(Context context, ItemClickInterface itemClickInterface, List<ItemModel> itemslList) {
         this.layoutInflater = LayoutInflater.from(context);
-        this.itemsArrayList = (ArrayList<ItemsModel>) itemslList;
+        this.itemsArrayList = (ArrayList<ItemModel>) itemslList;
+        this.itemClickInterface = itemClickInterface;
     }
 
     @NonNull
@@ -31,9 +34,15 @@ public class ItemsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     }
 
     @Override
-    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, final int position) {
         MyViewHolder myViewHolder = (MyViewHolder) holder;
         myViewHolder.itemTv.setText(itemsArrayList.get(position).getTodoString());
+        myViewHolder.itemTv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                itemClickInterface.handleClick(position);
+            }
+        });
     }
 
     @Override
@@ -48,5 +57,6 @@ public class ItemsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             super(itemView);
             itemTv = itemView.findViewById(R.id.tv_item);
         }
+
     }
 }
