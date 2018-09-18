@@ -70,12 +70,16 @@ public class APIServiceProvider {
     }
 
     public Call<ItemModel> modifyItem(ModifyItemInputModel modifyItemInputModel) {
-        String token=MyApplication.getToken();
-        return apiInterface.modifyToDoItem(MyApplication.getToken(),modifyItemInputModel);
+        String token = MyApplication.getToken();
+        return apiInterface.modifyToDoItem(MyApplication.getToken(), modifyItemInputModel);
     }
 
     public Call<ResponseBody> deleteItem(ItemModel itemModel) {
-        String token=MyApplication.getToken();
-        return  apiInterface.deleteItem(MyApplication.getToken(),itemModel);
+        String token = MyApplication.getToken();
+        return apiInterface.deleteItem(MyApplication.getToken(), itemModel);
+    }
+
+    public Call<ResponseBody> logout(UserModel userModel) {
+        return apiInterface.logout(userModel);
     }
 }

@@ -4,8 +4,6 @@ import com.example.vishambar.webserviceusingretrofit.advanced.models.ItemModel;
 import com.example.vishambar.webserviceusingretrofit.advanced.models.ModifyItemInputModel;
 import com.example.vishambar.webserviceusingretrofit.advanced.models.TokenModel;
 import com.example.vishambar.webserviceusingretrofit.advanced.models.RegisterModel;
-import com.example.vishambar.webserviceusingretrofit.advanced.models.SignoutModel;
-import com.example.vishambar.webserviceusingretrofit.advanced.models.ToDoItem;
 import com.example.vishambar.webserviceusingretrofit.advanced.models.UserModel;
 
 import java.util.List;
@@ -29,7 +27,7 @@ public interface APIInterface {
 
 
     @POST(Constants.logout)
-    Call<SignoutModel> logout(@Body SignoutModel signoutModel);
+    Call<ResponseBody> logout(@Body UserModel userModel);
 
     @POST(Constants.addToDoItem)
     Call<ItemModel> addToDoItem(@Header(value = "token") String token, @Body ItemModel itemModel);

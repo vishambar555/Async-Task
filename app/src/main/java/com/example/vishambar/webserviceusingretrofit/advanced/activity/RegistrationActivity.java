@@ -22,15 +22,12 @@ public class RegistrationActivity extends BaseActivity implements View.OnClickLi
 
     private static final String TAG = RegistrationActivity.class.getSimpleName();
     private EditText nameEt, emailIdEt, passwordEt;
-    private Button registerBtn;
+    private Button registerBtn,loginBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_advanced_main);
-        if (MyApplication.isLogin()) {
-            startActivity(new Intent(this, ItemsActivity.class));
-        }
     }
 
     @Override
@@ -39,6 +36,7 @@ public class RegistrationActivity extends BaseActivity implements View.OnClickLi
         emailIdEt = findViewById(R.id.et_email);
         passwordEt = findViewById(R.id.et_password);
         registerBtn = findViewById(R.id.btn_register);
+        loginBtn=findViewById(R.id.btn_login);
     }
 
     @Override
@@ -49,6 +47,7 @@ public class RegistrationActivity extends BaseActivity implements View.OnClickLi
     @Override
     public void setListeners() {
         registerBtn.setOnClickListener(this);
+        loginBtn.setOnClickListener(this);
     }
 
     private void register() {
@@ -61,7 +60,7 @@ public class RegistrationActivity extends BaseActivity implements View.OnClickLi
                 MyApplication.setUser(userModel);
                 Log.d(TAG, userModel.toString());
                 startActivity(new Intent(RegistrationActivity.this, LoginActivity.class));
-
+                finish();
             }
 
             @Override
@@ -91,6 +90,10 @@ public class RegistrationActivity extends BaseActivity implements View.OnClickLi
         switch (view.getId()) {
             case R.id.btn_register:
                 register();
+                break;
+            case R.id.btn_login:
+                startActivity(new Intent(this,LoginActivity.class));
+                finish();
                 break;
         }
     }

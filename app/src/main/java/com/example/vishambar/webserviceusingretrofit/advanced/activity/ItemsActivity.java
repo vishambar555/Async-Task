@@ -16,12 +16,14 @@ import com.example.vishambar.webserviceusingretrofit.R;
 import com.example.vishambar.webserviceusingretrofit.advanced.MyApplication;
 import com.example.vishambar.webserviceusingretrofit.advanced.adapters.ItemsAdapter;
 import com.example.vishambar.webserviceusingretrofit.advanced.models.ItemModel;
+import com.example.vishambar.webserviceusingretrofit.advanced.models.UserModel;
 import com.example.vishambar.webserviceusingretrofit.advanced.utils.ItemClickInterface;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -29,11 +31,11 @@ import retrofit2.Response;
 public class ItemsActivity extends BaseActivity implements View.OnClickListener, ItemClickInterface {
     private static final String TAG = ItemsActivity.class.getClass().getSimpleName();
     private RecyclerView recyclerView;
-    private Button addItemBtn, getItemsBtn;
+    private Button addItemBtn, getItemsBtn, logoutBtn;
     private EditText itemNameEt, placeEt;
     private ItemsAdapter itemsAdapter;
     private List<ItemModel> mItemsList;
-    private int clickedItemPosition=-1;
+    private int clickedItemPosition = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +50,7 @@ public class ItemsActivity extends BaseActivity implements View.OnClickListener,
         addItemBtn = findViewById(R.id.btn_add_items);
         getItemsBtn = findViewById(R.id.btn_get_items);
         recyclerView = findViewById(R.id.recycler_view);
+        logoutBtn = findViewById(R.id.btn_logout);
     }
 
     @Override
@@ -96,7 +99,7 @@ public class ItemsActivity extends BaseActivity implements View.OnClickListener,
     public void setListeners() {
         addItemBtn.setOnClickListener(this);
         getItemsBtn.setOnClickListener(this);
-
+        logoutBtn.setOnClickListener(this);
     }
 
     @Override
@@ -112,8 +115,29 @@ public class ItemsActivity extends BaseActivity implements View.OnClickListener,
                 getItems();
                 break;
 
+            case R.id.btn_logout:
+                logout();
+                break;
 
         }
+    }
+
+    private void logout() {
+        UserModel userModel = MyApplication.getUser();
+        userModel.setAuthorPassword("");
+        MyApplication.apiServiceProvider.logout(userModel).enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                startActivity(new Intent(ItemsActivity.this, LoginActivity.class));
+                MyApplication.setLogin(false);
+                finish();
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+
+            }
+        });
     }
 
 
@@ -142,7 +166,7 @@ public class ItemsActivity extends BaseActivity implements View.OnClickListener,
 
     @Override
     public void handleClick(int position) {
-        clickedItemPosition=position;
+        clickedItemPosition = position;
         Intent intent = new Intent(this, ItemDetailsActivty.class);
         Bundle bundle = new Bundle();
 
@@ -156,12 +180,12 @@ public class ItemsActivity extends BaseActivity implements View.OnClickListener,
         super.onActivityResult(requestCode, resultCode, data);
 
 
-        if(data!=null && clickedItemPosition!=-1){
+        if (data != null && clickedItemPosition != -1) {
             Bundle bundle = data.getExtras();
-            if (bundle!=null){
+            if (bundle != null) {
                 ItemModel itemModel = bundle.getParcelable("new_item");
                 mItemsList.set(clickedItemPosition, itemModel);
-            }else{
+            } else {
                 mItemsList.remove(clickedItemPosition);
             }
 
