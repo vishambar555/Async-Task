@@ -147,14 +147,17 @@ public class ItemsActivity extends BaseActivity implements View.OnClickListener,
             @Override
             public void onResponse(Call<ItemModel> call, Response<ItemModel> response) {
                 ItemModel item = response.body();
-                if (mItemsList == null || mItemsList.isEmpty()) {
-                    mItemsList = new ArrayList<>();
-                    mItemsList.add(item);
-                    setAdapter();
-                } else {
-                    mItemsList.add(item);
-                    itemsAdapter.notifyDataSetChanged();
+                if(item!=null){
+                    if (mItemsList == null || mItemsList.isEmpty()) {
+                        mItemsList = new ArrayList<>();
+                        mItemsList.add(item);
+                        setAdapter();
+                    } else {
+                        mItemsList.add(item);
+                        itemsAdapter.notifyDataSetChanged();
+                    }
                 }
+
             }
 
             @Override

@@ -19,14 +19,14 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class APIServiceProvider {
     public static APIServiceProvider apiServiceProvider;
-    private HttpLoggingInterceptor httpLoggingInterceptor;
-    private OkHttpClient okHttpClient;
-    private APIInterface apiInterface;
+
+
+    private RequestInterface requestInterface;
 
     private APIServiceProvider(String baseUrl, long readTimeout, long connectTimeout, HttpLoggingInterceptor.Level logLevel) {
-        httpLoggingInterceptor = new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY);
+        HttpLoggingInterceptor httpLoggingInterceptor = new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY);
 
-        okHttpClient = new OkHttpClient.Builder()
+        OkHttpClient okHttpClient = new OkHttpClient.Builder()
                 .readTimeout(5, TimeUnit.SECONDS)
                 .connectTimeout(10, TimeUnit.SECONDS)
                 .addNetworkInterceptor(httpLoggingInterceptor)
@@ -36,8 +36,7 @@ public class APIServiceProvider {
                 .client(okHttpClient)
                 .build();
 
-
-        apiInterface = retrofit.create(APIInterface.class);
+        requestInterface = retrofit.create(RequestInterface.class);
 
     }
 
@@ -51,35 +50,35 @@ public class APIServiceProvider {
     }
 
     public Call<UserModel> getRegisterApi(RegisterModel registerModel) {
-        return apiInterface.register(registerModel);
+        return requestInterface.register(registerModel);
     }
 
     public Call<TokenModel> getLoginApi(UserModel userModel) {
-        return apiInterface.login(userModel);
+        return requestInterface.login(userModel);
     }
 
     public Call<List<ItemModel>> getItemsApi() {
         String emailId = MyApplication.getUser().getAuthorEmailId();
         String token = MyApplication.getToken();
-        return apiInterface.getItems(MyApplication.getUser().getAuthorEmailId(), MyApplication.getToken());
+        return requestInterface.getItems(MyApplication.getUser().getAuthorEmailId(), MyApplication.getToken());
     }
 
 
     public Call<ItemModel> addItem(ItemModel itemModel) {
-        return apiInterface.addToDoItem(MyApplication.getToken(), itemModel);
+        return requestInterface.addToDoItem(MyApplication.getToken(), itemModel);
     }
 
     public Call<ItemModel> modifyItem(ModifyItemInputModel modifyItemInputModel) {
         String token = MyApplication.getToken();
-        return apiInterface.modifyToDoItem(MyApplication.getToken(), modifyItemInputModel);
+        return requestInterface.modifyToDoItem(MyApplication.getToken(), modifyItemInputModel);
     }
 
     public Call<ResponseBody> deleteItem(ItemModel itemModel) {
         String token = MyApplication.getToken();
-        return apiInterface.deleteItem(MyApplication.getToken(), itemModel);
+        return requestInterface.deleteItem(MyApplication.getToken(), itemModel);
     }
 
     public Call<ResponseBody> logout(UserModel userModel) {
-        return apiInterface.logout(userModel);
+        return requestInterface.logout(userModel);
     }
 }

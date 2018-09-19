@@ -5,7 +5,7 @@ import android.os.Bundle;
 import android.view.View;
 
 import com.example.vishambar.webserviceusingretrofit.R;
-import com.example.vishambar.webserviceusingretrofit.advanced.utils.APIInterface;
+import com.example.vishambar.webserviceusingretrofit.advanced.utils.RequestInterface;
 import com.example.vishambar.webserviceusingretrofit.advanced.utils.Constants;
 import com.example.vishambar.webserviceusingretrofit.advanced.models.RegisterModel;
 import com.example.vishambar.webserviceusingretrofit.advanced.models.UserModel;
@@ -47,9 +47,9 @@ public class NormalMainActivity extends AppCompatActivity {
                 .client(okHttpClient)
                 .build();
 
-         APIInterface apiInterface=retrofit.create(APIInterface.class);
+         RequestInterface requestInterface =retrofit.create(RequestInterface.class);
 
-        Call<UserModel> userModel = apiInterface.register(registerModel);
+        Call<UserModel> userModel = requestInterface.register(registerModel);
 
         userModel.enqueue(new Callback<UserModel>() {
             @Override
